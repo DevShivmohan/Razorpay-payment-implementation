@@ -1,0 +1,10 @@
+# server config
+server:
+  port: 8090
+
+spring:
+  application:
+    name: razorpay-payment-service
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
