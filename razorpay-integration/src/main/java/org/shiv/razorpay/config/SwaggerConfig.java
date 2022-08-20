@@ -1,6 +1,8 @@
 package org.shiv.razorpay.config;
 
 import com.google.common.base.Predicates;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import java.util.Collections;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()

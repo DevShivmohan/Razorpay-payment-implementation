@@ -21,7 +21,11 @@ public class RazorpayController {
 
     @PostMapping(value = "/order")
     public ResponseEntity<?> generateOrder(@RequestBody Map<String,Object> reqBody) throws RazorpayException {
-        System.out.println(reqBody);
         return ResponseEntity.status(HttpStatus.OK).body(razorpayService.generateOrder(reqBody).toString());
+    }
+
+    @PostMapping(value = "/save")
+    public ResponseEntity<?> paymentSave(@RequestBody Map<String,Object> reqBody) throws RazorpayException {
+        return ResponseEntity.status(HttpStatus.OK).body(razorpayService.afterPaymentCaptured(reqBody));
     }
 }
