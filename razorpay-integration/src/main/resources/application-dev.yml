@@ -3,6 +3,18 @@ server:
   port: 8090
 
 spring:
+  datasource:
+    name: razorpay
+    url: jdbc:mysql://192.168.4.1:3306/ram
+    username: root
+    password: 2815003Ram@
+    driver:
+      class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialeact: org.hibernate.dialeact.MySQL8Dialeact
+        ddl-auto: update
   application:
     name: razorpay-payment-service
   mvc:
