@@ -9,6 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class Beans {
     @Bean
     public RazorpayClient getRazorpayClient() throws RazorpayException {
-        return new RazorpayClient("rzp_test_7042XNF8NBeP5W","azGfwQDpzvNUf0p47fCYdrMM");
+        return new RazorpayClient("rzp_test_LUKaL2EYvgMhdH","nTFd5vbghcD5FtfEAMu18xLS");
     }
 }

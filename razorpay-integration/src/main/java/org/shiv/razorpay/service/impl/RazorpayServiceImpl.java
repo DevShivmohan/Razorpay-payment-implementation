@@ -1,10 +1,10 @@
 package org.shiv.razorpay.service.impl;
 
-import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.shiv.razorpay.exception.GenericException;
 import org.shiv.razorpay.service.RazorpayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,18 +24,32 @@ public class RazorpayServiceImpl implements RazorpayService {
     @Override
     public ResponseEntity<?> generateOrder(Map<String, Object> requestBody) throws RazorpayException {
         JSONObject orderObject=new JSONObject();
-        orderObject.put("amount",requestBody.get("amount"));
+        orderObject.put("amount",Integer.parseInt(""+requestBody.get("amount"))*100);
         orderObject.put("currency","INR");
         orderObject.put("receipt", UUID.randomUUID().toString());
-        Order order=razorpayClient.orders.create(orderObject);
-        System.out.println(order);
-        return ResponseEntity.status(HttpStatus.OK).body(order);
+        var order=razorpayClient.orders.create(orderObject);
+        requestBody.clear();
+        requestBody.put("order_id",order.get("id"));
+        requestBody.put("amount",order.get("amount"));
+        requestBody.put("amount_paid",order.get("amount_paid"));
+        requestBody.put("amount_due",order.get("amount_due"));
+        requestBody.put("currency",order.get("currency"));
+        requestBody.put("receipt",order.get("receipt"));
+        requestBody.put("entity",order.get("entity"));
+        requestBody.put("status",order.get("status"));
+        requestBody.put("attempts",order.get("attempts"));
+        log.info(requestBody.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(requestBody);
     }
 
     @Override
-    public ResponseEntity<?> afterPaymentCaptured(Map<String, Object> responseBody) throws RazorpayException {
-        var data= razorpayClient.payments.fetch(responseBody.get("p_id").toString());
-        System.out.println("Payments-"+data);
-        return ResponseEntity.status(HttpStatus.OK).body("Payment successfully captured on server");
+    public ResponseEntity<?> afterPaymentCaptured(Map<String, Object> responseBody) throws RazorpayException, GenericException {
+        var paymentData= razorpayClient.payments.fetch(responseBody.get("p_id").toString());
+        if(!paymentData.get("order_id").equals(responseBody.get("o_id")))
+            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Your payment not successful");
+        log.info("Payments-"+responseBody);
+        responseBody.clear();
+        responseBody.put("status","Payment successfully captured on server");
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }

@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<script>
+			function apiCall(){
+				console.log("Shiv executed");
+				var xhr = new XMLHttpRequest();
+				var url = "http:localhost:8090/razorpay/order";
+				xhr.open("POST", url, true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200) {
+						console.log("Success response-"+xhr.responseText);
+						var json = JSON.parse(xhr.responseText);
+						console.log("json data-"+json.body.order_id);
+					}else if(xhr.readyState==4){
+						console.log("Error response - "+xhr.errorText);
+					}
+				};
+				var data = JSON.stringify({"amount": "200"});
+				xhr.send(data);
+			}
+		</script>
+	</head>
+	
+		<body>
+		<button type="button" onClick=apiCall()>Pay</button>
+		</body>
+</html>
