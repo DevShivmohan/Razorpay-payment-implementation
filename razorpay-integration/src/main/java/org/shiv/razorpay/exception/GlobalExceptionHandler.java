@@ -21,6 +21,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RazorpayException.class)
     public ResponseEntity<?> handleRazorpayException(RazorpayException razorpayException){
         log.error(razorpayException.getMessage());
-        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Error has occurred Please try again");
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(razorpayException.getMessage());
     }
 }

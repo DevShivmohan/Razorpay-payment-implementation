@@ -52,4 +52,17 @@ public class RazorpayServiceImpl implements RazorpayService {
         responseBody.put("status","Payment successfully captured on server");
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
+
+    /**
+     * this happend on server side automatically not for request able
+     * @param paymentId this is id of which payment will be to return
+     * @return
+     * @throws RazorpayException
+     */
+    @Override
+    public ResponseEntity<?> refundPayment(String paymentId) throws RazorpayException {
+        var refund= razorpayClient.payments.refund(paymentId,new JSONObject().put("speed","normal"));
+        log.info(refund.toString());
+        return ResponseEntity.ok().body(refund);
+    }
 }

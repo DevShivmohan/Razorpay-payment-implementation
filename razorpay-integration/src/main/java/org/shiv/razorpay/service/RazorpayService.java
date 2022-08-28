@@ -9,4 +9,6 @@ import java.util.Map;
 public interface RazorpayService {
     ResponseEntity<?> generateOrder(Map<String,Object> requestBody) throws RazorpayException;
     ResponseEntity<?> afterPaymentCaptured(Map<String,Object> responseBody) throws RazorpayException, GenericException;
+
+    ResponseEntity<?> refundPayment(String paymentId) throws RazorpayException;
 }
