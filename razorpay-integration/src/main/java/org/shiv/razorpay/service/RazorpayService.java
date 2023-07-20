@@ -13,7 +13,7 @@ public interface RazorpayService {
 
     ResponseEntity<?> refundPayment(String paymentId) throws RazorpayException;
     ResponseEntity<?> generatePaymentLink(Map<String,Object> responseBody) throws RazorpayException;
-    ResponseEntity<?> handleCallbackOfPaymentLink(String paymentId,String paymentLinkId,String paymentLinkRefId,String paymentLinkStatus,String razorpaySignature);
+    ResponseEntity<?> handleCallbackOfPaymentLink(Map<String,String> callBackRequest);
 
 
 }

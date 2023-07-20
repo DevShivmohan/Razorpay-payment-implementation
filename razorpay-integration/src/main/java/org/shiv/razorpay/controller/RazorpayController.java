@@ -57,13 +57,10 @@ public class RazorpayController {
         return razorpayService.generatePaymentLink(req);
     }
 
-    @GetMapping(value = "/callback/{razorpay_payment_id}/{razorpay_payment_link_id}/{razorpay_payment_link_reference_id}/{razorpay_payment_link_status}/{razorpay_signature}")
-    public ResponseEntity<?> handleCallbackOfPaymentLink(@PathVariable("razorpay_payment_id") String razorpay_payment_id,
-                                                         @PathVariable("razorpay_payment_link_id") String razorpay_payment_link_id,
-                                                         @PathVariable("razorpay_payment_link_reference_id") String razorpay_payment_link_reference_id,
-                                                         @PathVariable("razorpay_payment_link_status") String razorpay_payment_link_status,
-                                                         @PathVariable("razorpay_signature") String razorpay_signature
-                                                         ) throws RazorpayException {
-        return razorpayService.handleCallbackOfPaymentLink(razorpay_payment_id,razorpay_payment_link_id,razorpay_payment_link_reference_id,razorpay_payment_link_status,razorpay_signature);
+    @GetMapping(value = "/callback/{auth}")
+    public ResponseEntity<?> handleCallbackOfPaymentLink(@PathVariable("auth") String authorization,@RequestParam Map<String,String> callbackRequest) throws RazorpayException {
+        log.info("Authorization-"+authorization);
+        callbackRequest.put("authorization",authorization);
+        return razorpayService.handleCallbackOfPaymentLink(callbackRequest);
     }
 }

@@ -71,13 +71,14 @@ public class RazorpayServiceImpl implements RazorpayService {
 
     @Override
     public ResponseEntity<?> generatePaymentLink(Map<String, Object> requestBody) throws RazorpayException {
+        String authorization="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGl2QGdtYWlsLmNvbSIsInVzZXJfdHlwZSI6IlZlbmRvciIsInRva2VuX3R5cGUiOiJBY2Nlc3NfVG9rZW4iLCJleHAiOjE2ODY1OTA1MjYsImlhdCI6MTY4NjU2ODkyNiwidXNlcm5hbWUiOiJzaGl2QGdtYWlsLmNvbSJ9.k_ujY3t3cIyFHHIf_DbRY6FShTuho4dqN-uWkYMelOU";
         JSONObject paymentLinkRequest = new JSONObject();
         paymentLinkRequest.put("amount",(Long.parseLong((String) requestBody.get("amount"))*100));
         paymentLinkRequest.put("currency","INR");
         paymentLinkRequest.put("accept_partial",true);
         paymentLinkRequest.put("first_min_partial_amount",100); // Rs 1 minimum to pay
         paymentLinkRequest.put("expire_by", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + (16 * 60 * 1000)));
-        paymentLinkRequest.put("reference_id",UUID.randomUUID().toString());
+        paymentLinkRequest.put("reference_id",UUID.randomUUID().toString()); // unique reference id
         paymentLinkRequest.put("description","Payment for policy no #23456");
         JSONObject customer = new JSONObject();
         customer.put("name", requestBody.get("name"));
@@ -92,7 +93,7 @@ public class RazorpayServiceImpl implements RazorpayService {
         JSONObject notes = new JSONObject();
         notes.put("policy_name","Learning");
         paymentLinkRequest.put("notes",notes);
-        paymentLinkRequest.put("callback_url","http://localhost:8090/razorpay/callback");
+        paymentLinkRequest.put("callback_url","http://localhost:8090/razorpay/callback/"+authorization); // pass the authorization for validating the user auth
         paymentLinkRequest.put("callback_method","get");
 
         PaymentLink payment = razorpayClient.paymentLink.create(paymentLinkRequest);
@@ -101,15 +102,9 @@ public class RazorpayServiceImpl implements RazorpayService {
     }
 
     @Override
-    public ResponseEntity<?> handleCallbackOfPaymentLink(String paymentId,String paymentLinkId,String paymentLinkRefId,String paymentLinkStatus,String razorpaySignature) {
-        Map<String,Object> response=new HashMap<>();
-        response.put("paymentId",paymentId);
-        response.put("paymentLinkId",paymentLinkId);
-        response.put("paymentLinkRefId",paymentLinkRefId);
-        response.put("paymentLinkStatus",paymentLinkStatus);
-        response.put("razorpaySignature",razorpaySignature);
-        response.put("message","Payment captured successfully on our server");
-        log.info(response.toString());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> handleCallbackOfPaymentLink(Map<String,String> callBackRequest) {
+        callBackRequest.put("message","Payment captured successfully on our server");
+        log.info(callBackRequest.toString());
+        return ResponseEntity.ok(callBackRequest);
     }
 }
