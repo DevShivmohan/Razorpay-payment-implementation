@@ -75,8 +75,8 @@ public class RazorpayServiceImpl implements RazorpayService {
         JSONObject paymentLinkRequest = new JSONObject();
         paymentLinkRequest.put("amount",(Long.parseLong((String) requestBody.get("amount"))*100));
         paymentLinkRequest.put("currency","INR");
-        paymentLinkRequest.put("accept_partial",true);
-        paymentLinkRequest.put("first_min_partial_amount",100); // Rs 1 minimum to pay
+        paymentLinkRequest.put("accept_partial",false);
+        paymentLinkRequest.put("first_min_partial_amount",(Long.parseLong((String) requestBody.get("amount"))*100)); // Rs 1 minimum to pay
         paymentLinkRequest.put("expire_by", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + (16 * 60 * 1000)));
         paymentLinkRequest.put("reference_id",UUID.randomUUID().toString()); // unique reference id
         paymentLinkRequest.put("description","Payment for policy no #23456");
