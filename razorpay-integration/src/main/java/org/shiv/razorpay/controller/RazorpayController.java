@@ -43,4 +43,27 @@ public class RazorpayController {
         log.info("Shiv id-"+paymentId);
         return ResponseEntity.status(HttpStatus.OK).body(razorpayService.refundPayment(paymentId));
     }
+
+
+    /**
+     * Generate a payment link with callback url and 16 minutes link expiry
+     * @param req
+     * @return
+     * @throws RazorpayException
+     */
+    @PostMapping(value = "/link")
+    public ResponseEntity<?> generatePaymentLink(@RequestBody Map<String,Object> req) throws RazorpayException {
+        log.info("Shiv id-"+req.toString());
+        return razorpayService.generatePaymentLink(req);
+    }
+
+    @GetMapping(value = "/callback/{razorpay_payment_id}/{razorpay_payment_link_id}/{razorpay_payment_link_reference_id}/{razorpay_payment_link_status}/{razorpay_signature}")
+    public ResponseEntity<?> handleCallbackOfPaymentLink(@PathVariable("razorpay_payment_id") String razorpay_payment_id,
+                                                         @PathVariable("razorpay_payment_link_id") String razorpay_payment_link_id,
+                                                         @PathVariable("razorpay_payment_link_reference_id") String razorpay_payment_link_reference_id,
+                                                         @PathVariable("razorpay_payment_link_status") String razorpay_payment_link_status,
+                                                         @PathVariable("razorpay_signature") String razorpay_signature
+                                                         ) throws RazorpayException {
+        return razorpayService.handleCallbackOfPaymentLink(razorpay_payment_id,razorpay_payment_link_id,razorpay_payment_link_reference_id,razorpay_payment_link_status,razorpay_signature);
+    }
 }
