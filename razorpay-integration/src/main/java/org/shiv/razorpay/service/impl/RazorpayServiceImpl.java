@@ -72,11 +72,12 @@ public class RazorpayServiceImpl implements RazorpayService {
     @Override
     public ResponseEntity<?> generatePaymentLink(Map<String, Object> requestBody) throws RazorpayException {
         String authorization="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGl2QGdtYWlsLmNvbSIsInVzZXJfdHlwZSI6IlZlbmRvciIsInRva2VuX3R5cGUiOiJBY2Nlc3NfVG9rZW4iLCJleHAiOjE2ODY1OTA1MjYsImlhdCI6MTY4NjU2ODkyNiwidXNlcm5hbWUiOiJzaGl2QGdtYWlsLmNvbSJ9.k_ujY3t3cIyFHHIf_DbRY6FShTuho4dqN-uWkYMelOU";
+        long amount=Math.round(Double.parseDouble((String) requestBody.get("amount")) * 100);
         JSONObject paymentLinkRequest = new JSONObject();
-        paymentLinkRequest.put("amount",(Long.parseLong((String) requestBody.get("amount"))*100));
+        paymentLinkRequest.put("amount",amount);
         paymentLinkRequest.put("currency","INR");
         paymentLinkRequest.put("accept_partial",false);
-        paymentLinkRequest.put("first_min_partial_amount",(Long.parseLong((String) requestBody.get("amount"))*100)); // Rs 1 minimum to pay
+        paymentLinkRequest.put("first_min_partial_amount",amount); // Rs 1 minimum to pay
         paymentLinkRequest.put("expire_by", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() + (16 * 60 * 1000)));
         paymentLinkRequest.put("reference_id",UUID.randomUUID().toString()); // unique reference id
         paymentLinkRequest.put("description","Payment for policy no #23456");
