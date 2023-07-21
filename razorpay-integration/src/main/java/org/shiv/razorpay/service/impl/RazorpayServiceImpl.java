@@ -5,6 +5,7 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.shiv.razorpay.config.Beans;
 import org.shiv.razorpay.exception.GenericException;
 import org.shiv.razorpay.service.RazorpayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -70,8 +73,8 @@ public class RazorpayServiceImpl implements RazorpayService {
     }
 
     @Override
-    public ResponseEntity<?> generatePaymentLink(Map<String, Object> requestBody) throws RazorpayException {
-        String authorization="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGl2QGdtYWlsLmNvbSIsInVzZXJfdHlwZSI6IlZlbmRvciIsInRva2VuX3R5cGUiOiJBY2Nlc3NfVG9rZW4iLCJleHAiOjE2ODY1OTA1MjYsImlhdCI6MTY4NjU2ODkyNiwidXNlcm5hbWUiOiJzaGl2QGdtYWlsLmNvbSJ9.k_ujY3t3cIyFHHIf_DbRY6FShTuho4dqN-uWkYMelOU";
+    public ResponseEntity<?> generatePaymentLink(Map<String, Object> requestBody) throws RazorpayException, UnknownHostException {
+        String ipAddress= Inet4Address.getLocalHost().getHostAddress();
         long amount=Math.round(Double.parseDouble((String) requestBody.get("amount")) * 100);
         JSONObject paymentLinkRequest = new JSONObject();
         paymentLinkRequest.put("amount",amount);
@@ -94,7 +97,7 @@ public class RazorpayServiceImpl implements RazorpayService {
         JSONObject notes = new JSONObject();
         notes.put("policy_name","Learning");
         paymentLinkRequest.put("notes",notes);
-        paymentLinkRequest.put("callback_url","http://localhost:8090/razorpay/callback/"+authorization); // pass the authorization for validating the user auth
+        paymentLinkRequest.put("callback_url","http://"+ipAddress+":8090/razorpay/callback/"+ Beans.AUTHORIZATION); // pass the authorization for validating the user auth
         paymentLinkRequest.put("callback_method","get");
 
         PaymentLink payment = razorpayClient.paymentLink.create(paymentLinkRequest);

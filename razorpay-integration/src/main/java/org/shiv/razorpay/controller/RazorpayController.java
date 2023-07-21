@@ -2,6 +2,7 @@ package org.shiv.razorpay.controller;
 
 import com.razorpay.RazorpayException;
 import lombok.extern.slf4j.Slf4j;
+import org.shiv.razorpay.config.Beans;
 import org.shiv.razorpay.exception.GenericException;
 import org.shiv.razorpay.service.RazorpayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownHostException;
 import java.util.Map;
 
 @RestController
@@ -52,14 +54,16 @@ public class RazorpayController {
      * @throws RazorpayException
      */
     @PostMapping(value = "/link")
-    public ResponseEntity<?> generatePaymentLink(@RequestBody Map<String,Object> req) throws RazorpayException {
+    public ResponseEntity<?> generatePaymentLink(@RequestBody Map<String,Object> req) throws RazorpayException, UnknownHostException {
         log.info("Shiv id-"+req.toString());
         return razorpayService.generatePaymentLink(req);
     }
 
     @GetMapping(value = "/callback/{auth}")
-    public ResponseEntity<?> handleCallbackOfPaymentLink(@PathVariable("auth") String authorization,@RequestParam Map<String,String> callbackRequest) throws RazorpayException {
+    public ResponseEntity<?> handleCallbackOfPaymentLink(@PathVariable("auth") String authorization,@RequestParam Map<String,String> callbackRequest) throws RazorpayException, GenericException {
         log.info("Authorization-"+authorization);
+        if(!authorization.equals(Beans.AUTHORIZATION))
+            throw new GenericException(HttpStatus.FORBIDDEN.value(), "Unauthorized access");
         callbackRequest.put("authorization",authorization);
         return razorpayService.handleCallbackOfPaymentLink(callbackRequest);
     }
